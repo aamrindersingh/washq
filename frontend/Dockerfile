@@ -13,6 +13,12 @@ RUN npm run build
 # Stage 2: serve them with nginx. Node is not in the final image.
 FROM nginx:1.27-alpine
 
+# Pull Alpine's patched packages. Without this the image ships the openssl
+# and c-ares that were current when the nginx tag was built, and Trivy finds
+# 43 HIGH or CRITICAL CVEs that already have fixes. The CI gate blocks those,
+# so they have to be fixed here rather than waved through.
+RUN apk upgrade --no-cache
+
 # The entrypoint runs envsubst over anything in templates/ and writes the
 # result into conf.d/. Only variables that exist in the environment are
 # replaced, so nginx variables like $uri survive untouched.
