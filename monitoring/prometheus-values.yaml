@@ -1,0 +1,60 @@
+# Values for kube-prometheus-stack, which brings Prometheus, Grafana,
+# Alertmanager and the operator CRDs in one install.
+#
+#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#   helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+#     -n monitoring --create-namespace -f monitoring/prometheus-values.yaml
+
+fullnameOverride: monitoring
+
+prometheus:
+  prometheusSpec:
+    retention: 6h
+    scrapeInterval: 15s
+
+    # The chart defaults to only picking up ServiceMonitors it created
+    # itself. Setting these to false makes it watch every namespace, which
+    # is how it finds the washq ServiceMonitor.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 400Mi
+
+grafana:
+  adminUser: admin
+  # Demo only. A real install uses an existing secret.
+  adminPassword: washq-admin
+
+  service:
+    type: ClusterIP
+
+  # Picks up any ConfigMap labelled grafana_dashboard, which is how the
+  # WashQ dashboard gets loaded without clicking through the UI.
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+alertmanager:
+  enabled: false
+
+# Not useful on kind and noisy on a managed control plane like EKS, where
+# these components are not reachable anyway.
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
