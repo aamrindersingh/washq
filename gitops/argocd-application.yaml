@@ -54,3 +54,15 @@ spec:
       name: washq-washq-backend
       jsonPointers:
         - /spec/replicas
+
+    # Kubernetes stamps apiVersion, kind and a status block onto every
+    # volumeClaimTemplate after it is created. None of those can be
+    # written in the chart, so without this the StatefulSet reports
+    # OutOfSync forever even though nothing is wrong.
+    - group: apps
+      kind: StatefulSet
+      name: washq-washq-postgres
+      jsonPointers:
+        - /spec/volumeClaimTemplates/0/apiVersion
+        - /spec/volumeClaimTemplates/0/kind
+        - /spec/volumeClaimTemplates/0/status

@@ -72,6 +72,9 @@ spec:
         name: data
       spec:
         accessModes: ["ReadWriteOnce"]
+        # Stated rather than left to the API server to default, so Argo
+        # does not read the defaulted value back as drift.
+        volumeMode: Filesystem
         {{- if .Values.postgres.storageClass }}
         storageClassName: {{ .Values.postgres.storageClass }}
         {{- end }}
