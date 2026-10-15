@@ -464,6 +464,50 @@ Grafana logs in with `admin` and the password in
 
 ---
 
+## GitOps with Argo CD
+
+The cluster is not deployed to by hand. Argo CD watches this repo and
+makes the cluster match it, so a deploy is a commit.
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+
+kubectl apply -f gitops/argocd-application.yaml
+kubectl get application washq -n argocd
+```
+
+```
+NAME    SYNC STATUS   HEALTH STATUS
+washq   Synced        Healthy
+```
+
+Full output in [`docs/evidence/07-argocd.txt`](docs/evidence/07-argocd.txt)
+and a screenshot of the tree view in
+[`docs/screenshots/10-argocd-synced.png`](docs/screenshots/10-argocd-synced.png).
+
+A deploy goes: push to `main`, the pipeline builds and scans and pushes
+both images tagged with the commit SHA, then that SHA goes into
+`gitops/argocd-application.yaml` and Argo rolls it out. More detail in
+[`gitops/README.md`](gitops/README.md).
+
+Two settings in the Application are doing real work:
+
+**`selfHeal: true`** puts back anything changed directly on the cluster.
+That is the point of GitOps, and it also means editing a live Deployment
+to debug something will not stick.
+
+**`ignoreDifferences`** on two paths. One is `/spec/replicas` on the
+backend, which the HPA owns. Without it Argo reads the scaled replica
+count as drift and resets it every few minutes, fighting the autoscaler.
+The other is the Postgres `volumeClaimTemplates`, because Kubernetes
+stamps `apiVersion`, `kind` and a `status` block onto them after
+creation. None of that can be written in the chart, so without the rule
+the StatefulSet sits OutOfSync forever with nothing actually wrong.
+
+---
+
 ## Troubleshooting
 
 Two manifests that break on purpose, with the commands that find the
@@ -488,6 +532,7 @@ k8s/                namespace and the kind cluster config
 helm/washq/         the chart
 terraform/          VPC, EKS, IAM
 monitoring/         Prometheus values and the Grafana dashboard
+gitops/             Argo CD application
 troubleshooting/    two deliberately broken manifests
 scripts/            load test for the HPA
 docs/evidence/      real command output
@@ -526,3 +571,17 @@ be cert-manager and a real hostname.
 
 **One environment.** There are dev and prod values files, but only one
 cluster. No staging, and no promotion between environments.
+
+**Migrations run at pod start, so a recreated database needs a pod
+restart.** The init container migrates and seeds when the backend pod
+starts. If Postgres is wiped while the backend pods keep running, those
+pods carry on pointing at an empty database and every request fails with
+`relation "machines" does not exist` until the Deployment is restarted. I
+hit this while testing. In normal use it does not come up, because any
+deploy creates new pods anyway, but a migration Job with a Helm hook
+would be the more correct shape.
+
+**StatefulSet volume claims cannot be changed in place.**
+`volumeClaimTemplates` are immutable, so changing the storage class or
+the size means deleting and recreating the StatefulSet. Argo CD cannot
+roll that out on its own.

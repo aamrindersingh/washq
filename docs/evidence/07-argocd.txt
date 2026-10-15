@@ -1,0 +1,18 @@
+$ kubectl get application washq -n argocd
+
+NAME    SYNC STATUS   HEALTH STATUS
+washq   Synced        Healthy
+
+$ kubectl get application washq -n argocd -o custom-columns=...
+
+NAME    SYNC     HEALTH    REVISION
+washq   Synced   Healthy   eb48cb5a07fec7561f81f9230d5c1eafb205d0d0
+
+$ kubectl get pods -n washq
+
+NAME                                    READY   STATUS    RESTARTS   AGE
+washq-washq-backend-6df4649665-gftr4    1/1     Running   0          48m
+washq-washq-backend-6df4649665-vggnc    1/1     Running   0          48m
+washq-washq-frontend-568c745b6d-q5gmn   1/1     Running   0          48m
+washq-washq-frontend-568c745b6d-vc7jk   1/1     Running   0          48m
+washq-washq-postgres-0                  1/1     Running   0          17m
