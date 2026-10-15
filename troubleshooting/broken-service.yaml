@@ -1,0 +1,29 @@
+# Deliberately broken: the selector does not match any pod.
+#
+# The backend pods are labelled app.kubernetes.io/component=backend. This
+# Service looks for component=api, which nothing uses.
+#
+#   kubectl apply -f troubleshooting/broken-service.yaml
+#   kubectl get endpoints -n washq broken-service
+#
+# The Service exists and has a ClusterIP, so it looks fine in get svc.
+# The giveaway is that its endpoint list is empty, so every request to it
+# times out. Comparing the Service selector against the pod labels is the
+# fix:
+#
+#   kubectl get pods -n washq --show-labels
+#
+#   kubectl delete -f troubleshooting/broken-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: broken-service
+  namespace: washq
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app.kubernetes.io/name: washq
+    app.kubernetes.io/component: api

@@ -1,0 +1,33 @@
+# Deliberately broken: the image tag does not exist.
+#
+#   kubectl apply -f troubleshooting/broken-image.yaml
+#   kubectl get pods -n washq
+#   kubectl describe pod -n washq -l demo=broken-image
+#
+# The pod sits in ImagePullBackOff. describe shows the pull failing under
+# Events, which is the first place to look. Nothing in the logs, because
+# the container never started.
+#
+#   kubectl delete -f troubleshooting/broken-image.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-image
+  namespace: washq
+  labels:
+    demo: broken-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      demo: broken-image
+  template:
+    metadata:
+      labels:
+        demo: broken-image
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/aamrindersingh/washq/backend:this-tag-was-never-built
+          ports:
+            - containerPort: 8000
