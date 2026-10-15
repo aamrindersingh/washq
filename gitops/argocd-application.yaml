@@ -1,0 +1,56 @@
+# Argo CD watches this repo and keeps the cluster matching it. Changing
+# the image tag here and pushing is what triggers a deploy, rather than
+# anyone running helm by hand against the cluster.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: washq
+  namespace: argocd
+  finalizers:
+    # Makes deleting the Application remove what it created, instead of
+    # orphaning the workloads.
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/aamrindersingh/washq.git
+    targetRevision: main
+    path: helm/washq
+    helm:
+      valueFiles:
+        - values-prod.yaml
+      parameters:
+        # The commit SHA of the images the pipeline published. Bumping
+        # this is the deploy.
+        - name: image.tag
+          value: "05896e8812c36e51bddc5422404e296f0b460d9a"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: washq
+
+  syncPolicy:
+    automated:
+      # Puts back anything changed by hand on the cluster.
+      selfHeal: true
+      # Removes resources deleted from Git.
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+
+  ignoreDifferences:
+    # The HPA owns the replica count. Without this Argo sees the scaled
+    # count as drift and scales it back every few minutes, fighting the
+    # autoscaler.
+    - group: apps
+      kind: Deployment
+      name: washq-washq-backend
+      jsonPointers:
+        - /spec/replicas

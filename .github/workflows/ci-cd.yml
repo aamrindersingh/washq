@@ -83,11 +83,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # QEMU lets the amd64 runner also build the arm64 image. Without it
+      # the published image is amd64 only, which fails to run on Apple
+      # Silicon and on Graviton nodes.
+      - uses: docker/setup-qemu-action@v3
+
       - uses: docker/setup-buildx-action@v3
 
       # Built and loaded locally first so Trivy can scan the exact image
       # that would be published. Nothing is pushed before the scan passes.
-      - name: Build image
+      # This one is the runner's own architecture, because docker load
+      # cannot take a multi-platform result.
+      - name: Build image for scanning
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
@@ -126,6 +133,9 @@ jobs:
         with:
           context: ${{ matrix.context }}
           push: true
+          # Built for both architectures so the image runs on EKS amd64
+          # nodes and on an Apple Silicon laptop.
+          platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.name }}
 
