@@ -1,0 +1,25 @@
+$ terraform validate && terraform plan
+
+Success! The configuration is valid.
+
+
+  # aws_eks_addon.coredns will be created
+  # aws_eks_addon.kube_proxy will be created
+  # aws_eks_addon.metrics_server will be created
+  # aws_eks_addon.vpc_cni will be created
+  # aws_eks_cluster.main will be created
+  # aws_eks_node_group.main will be created
+  # aws_iam_role.cluster will be created
+  # aws_iam_role.node will be created
+  # aws_iam_role_policy_attachment.cluster will be created
+  # aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"] will be created
+  # aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"] will be created
+  # aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"] will be created
+  # aws_internet_gateway.main will be created
+  # aws_route_table.public will be created
+  # aws_route_table_association.public[0] will be created
+  # aws_route_table_association.public[1] will be created
+  # aws_subnet.public[0] will be created
+  # aws_subnet.public[1] will be created
+  # aws_vpc.main will be created
+Plan: 19 to add, 0 to change, 0 to destroy.

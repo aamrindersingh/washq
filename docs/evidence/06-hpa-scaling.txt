@@ -1,0 +1,27 @@
+Captured live while scripts/load-test.sh was running.
+
+$ kubectl get hpa -n washq      # before load
+
+NAME                  REFERENCE                        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+washq-washq-backend   Deployment/washq-washq-backend   cpu: 2%/70%   2         6         2          3m59s
+
+$ kubectl get hpa -n washq      # during load
+
+NAME                  REFERENCE                        TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+washq-washq-backend   Deployment/washq-washq-backend   cpu: 93%/70%   2         6         4          4m54s
+
+$ kubectl get pods -n washq -l app.kubernetes.io/component=backend
+
+NAME                                   READY   STATUS    RESTARTS   AGE
+washq-washq-backend-85f7696d4f-2lfsr   1/1     Running   0          25s
+washq-washq-backend-85f7696d4f-7np7f   1/1     Running   0          25s
+washq-washq-backend-85f7696d4f-llk24   1/1     Running   0          4m55s
+washq-washq-backend-85f7696d4f-xwgnb   1/1     Running   0          13m
+
+$ kubectl top pods -n washq -l app.kubernetes.io/component=backend
+
+NAME                                   CPU(cores)   MEMORY(bytes)   
+washq-washq-backend-85f7696d4f-2lfsr   4m           63Mi            
+washq-washq-backend-85f7696d4f-7np7f   4m           63Mi            
+washq-washq-backend-85f7696d4f-llk24   3m           65Mi            
+washq-washq-backend-85f7696d4f-xwgnb   3m           66Mi            

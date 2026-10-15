@@ -1,0 +1,18 @@
+$ curl -s http://washq.local/metrics | grep washq_
+
+# HELP washq_bookings_created_total Slots booked successfully
+washq_bookings_created_total 1.0
+# HELP washq_bookings_created_created Slots booked successfully
+washq_bookings_created_created 1.792099992306491e+09
+# HELP washq_double_booking_rejected_total Booking attempts refused because the slot was already taken
+washq_double_booking_rejected_total 1.0
+# HELP washq_double_booking_rejected_created Booking attempts refused because the slot was already taken
+washq_double_booking_rejected_created 1.7920999923065038e+09
+# HELP washq_bookings_cancelled_total Bookings cancelled by a student
+washq_bookings_cancelled_total 0.0
+# HELP washq_bookings_cancelled_created Bookings cancelled by a student
+washq_bookings_cancelled_created 1.792099992306509e+09
+# HELP washq_machines_busy Machines running a wash right now
+washq_machines_busy 0.0
+# HELP washq_machines_out_of_order Machines marked broken
+washq_machines_out_of_order 0.0

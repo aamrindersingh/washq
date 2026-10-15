@@ -1,0 +1,34 @@
+$ cd backend && pytest -v
+
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/amrindersinghscaler/devops/washq/backend/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/amrindersinghscaler/devops/washq/backend
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 21 items
+
+tests/test_bookings.py::test_booking_a_free_slot_works PASSED            [  4%]
+tests/test_bookings.py::test_the_same_slot_cannot_be_booked_twice PASSED [  9%]
+tests/test_bookings.py::test_an_overlapping_slot_is_also_refused PASSED  [ 14%]
+tests/test_bookings.py::test_back_to_back_slots_are_allowed PASSED       [ 19%]
+tests/test_bookings.py::test_cancelling_frees_the_slot PASSED            [ 23%]
+tests/test_bookings.py::test_two_machines_can_run_the_same_slot PASSED   [ 28%]
+tests/test_bookings.py::test_cannot_book_a_broken_machine PASSED         [ 33%]
+tests/test_bookings.py::test_cannot_book_the_past PASSED                 [ 38%]
+tests/test_bookings.py::test_rescheduling_checks_the_new_slot PASSED     [ 42%]
+tests/test_bookings.py::test_booking_list_is_paginated PASSED            [ 47%]
+tests/test_bookings.py::test_unknown_booking_is_404 PASSED               [ 52%]
+tests/test_bookings.py::test_room_number_is_validated PASSED             [ 57%]
+tests/test_health.py::test_health_is_ok PASSED                           [ 61%]
+tests/test_health.py::test_ready_checks_the_database PASSED              [ 66%]
+tests/test_health.py::test_metrics_endpoint_is_prometheus_text PASSED    [ 71%]
+tests/test_machines.py::test_add_and_list_machines PASSED                [ 76%]
+tests/test_machines.py::test_duplicate_label_is_rejected PASSED          [ 80%]
+tests/test_machines.py::test_machine_can_be_marked_out_of_order PASSED   [ 85%]
+tests/test_machines.py::test_delete_machine PASSED                       [ 90%]
+tests/test_stats.py::test_stats_counts_machines_and_bookings PASSED      [ 95%]
+tests/test_stats.py::test_broken_machines_show_in_stats PASSED           [100%]
+
+============================== 21 passed in 0.17s ==============================
