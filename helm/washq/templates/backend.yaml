@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "washq.fullname" . }}-backend
+  labels:
+    {{- include "washq.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: http
+      name: http
+  selector:
+    {{- include "washq.backendSelector" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "washq.fullname" . }}-backend
+  labels:
+    {{- include "washq.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "washq.backendSelector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "washq.labels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+      annotations:
+        # Rolls the pods when the database credentials change.
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      initContainers:
+        # Migrations run once per pod start, before the API accepts traffic.
+        # Alembic is safe to run concurrently here because it takes a lock.
+        - name: migrate
+          image: {{ include "washq.image" (dict "Values" .Values "Chart" .Chart "component" "backend") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c", "alembic upgrade head && python seed.py"]
+          env:
+            {{- include "washq.backendEnv" . | nindent 12 }}
+      containers:
+        - name: backend
+          image: {{ include "washq.image" (dict "Values" .Values "Chart" .Chart "component" "backend") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.containerPort }}
+          env:
+            {{- include "washq.backendEnv" . | nindent 12 }}
+          # Liveness uses /health, which does not touch the database, so a
+          # slow query cannot get the pod killed. Readiness uses
+          # /health/ready, which does, so a pod with no database drops out
+          # of the Service instead of serving errors.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

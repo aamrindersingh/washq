@@ -1,0 +1,19 @@
+{{- if .Values.serviceMonitor.enabled }}
+# Tells the Prometheus operator to scrape the backend. Needs the operator
+# CRDs, so it is off unless kube-prometheus-stack is installed.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "washq.fullname" . }}-backend
+  labels:
+    {{- include "washq.labels" . | nindent 4 }}
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      {{- include "washq.backendSelector" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

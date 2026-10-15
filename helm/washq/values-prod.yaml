@@ -1,0 +1,18 @@
+# EKS. Images come from GHCR and the rubric asks for two replicas each.
+backend:
+  replicaCount: 2
+
+frontend:
+  replicaCount: 2
+
+postgres:
+  storage: 5Gi
+  storageClass: gp2
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+
+serviceMonitor:
+  enabled: true

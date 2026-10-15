@@ -1,0 +1,42 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "washq.fullname" . }}
+  labels:
+    {{- include "washq.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          # Longest prefix wins, so /api has to be listed before /.
+          # Everything under /api goes to the API, everything else is the
+          # React app.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "washq.fullname" . }}-backend
+                port:
+                  number: 8000
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "washq.fullname" . }}-backend
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "washq.fullname" . }}-frontend
+                port:
+                  number: 80
+{{- end }}

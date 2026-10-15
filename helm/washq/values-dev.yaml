@@ -1,0 +1,22 @@
+# Local kind cluster. Images are loaded into the node by hand, so never
+# try to pull them.
+image:
+  registry: ""
+  repository: washq
+  tag: dev
+  pullPolicy: Never
+
+backend:
+  replicaCount: 2
+
+frontend:
+  replicaCount: 2
+
+postgres:
+  storage: 1Gi
+
+autoscaling:
+  enabled: false
+
+ingress:
+  host: washq.local

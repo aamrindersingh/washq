@@ -1,0 +1,74 @@
+# Defaults are what the chart installs when nothing is overridden.
+# values-dev.yaml and values-prod.yaml change only what differs.
+
+nameOverride: ""
+
+image:
+  registry: ghcr.io
+  repository: aamrindersingh/washq
+  # Set per deploy with --set image.tag=<commit sha>. The CI pipeline tags
+  # images with the commit SHA and never publishes latest.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+backend:
+  replicaCount: 2
+  containerPort: 8000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    slotMinutes: "45"
+    hostelTz: "Asia/Kolkata"
+
+frontend:
+  replicaCount: 2
+  containerPort: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  database: washq
+  username: washq
+  # Demo default. A real deploy sets existingSecret instead.
+  password: washq
+  existingSecret: ""
+  storage: 2Gi
+  storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: washq.local
+  annotations: {}
+
+# Scales the backend on CPU. The load test in scripts/ drives this.
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+# Needs the Prometheus operator CRDs. Off by default so a plain
+# helm install works on a cluster without them.
+serviceMonitor:
+  enabled: false
+  interval: 15s

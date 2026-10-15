@@ -1,0 +1,8 @@
+apiVersion: v2
+name: washq
+description: Hostel laundry slot booking. Frontend, backend and Postgres.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Amrinder Singh

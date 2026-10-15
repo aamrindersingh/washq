@@ -1,0 +1,23 @@
+WashQ is installed as release {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
+
+Check it came up:
+
+  kubectl get pods -n {{ .Release.Namespace }}
+  kubectl get svc -n {{ .Release.Namespace }}
+  helm list -n {{ .Release.Namespace }}
+
+{{- if .Values.ingress.enabled }}
+
+Reach it through the ingress at http://{{ .Values.ingress.host }}
+
+On a local kind cluster add this to /etc/hosts first:
+
+  127.0.0.1 {{ .Values.ingress.host }}
+{{- end }}
+
+{{- if .Values.autoscaling.enabled }}
+
+The backend scales between {{ .Values.autoscaling.minReplicas }} and {{ .Values.autoscaling.maxReplicas }} pods at {{ .Values.autoscaling.targetCPUUtilizationPercentage }}% CPU:
+
+  kubectl get hpa -n {{ .Release.Namespace }} -w
+{{- end }}
