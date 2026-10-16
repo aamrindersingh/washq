@@ -305,6 +305,28 @@ aws ec2 describe-instance-types --region ap-south-1 \
 `m7i-flex.large` is on that list and has 8 GiB, so it is the default
 here. On a paid account any sensible type works.
 
+**EKS does not install the EBS CSI driver**, even though it ships a `gp2`
+StorageClass that points at `ebs.csi.aws.com`. Without the driver a
+PersistentVolumeClaim sits in `Pending` with "waiting for a volume to be
+created by the external provisioner", Postgres never schedules, and the
+backend init container crash loops against a database that does not
+exist. The backend looks like the problem and is only the symptom. The
+addon is in `eks.tf`.
+
+**That driver needs IRSA, not the node role.** Attaching
+`AmazonEBSCSIDriverPolicy` to the node role is not enough: the controller
+pod is not on the host network, cannot reach instance metadata, and dies
+with `no EC2 IMDS role found`. So `iam.tf` creates an OIDC provider and a
+role scoped to `system:serviceaccount:kube-system:ebs-csi-controller-sa`,
+and the addon is given that role.
+
+**An AWS Free plan account cannot create load balancers at all.** A
+Service of type LoadBalancer stays `<pending>` and the event reads
+`OperationNotPermitted: This AWS account currently does not support
+creating load balancers`. Nothing in the config fixes that. The app was
+reached through the ingress controller by port forward instead, and on a
+paid account the same Ingress gets an ELB with no changes.
+
 Two more details that are easy to miss:
 
 The subnets carry `kubernetes.io/role/elb` and the cluster tag. Without

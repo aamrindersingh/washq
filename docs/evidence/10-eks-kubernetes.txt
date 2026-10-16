@@ -1,0 +1,44 @@
+$ aws eks describe-cluster --region ap-south-1 --name washq-cluster --query cluster.status
+
+ACTIVE
+
+$ kubectl get nodes
+
+NAME                                        STATUS   ROLES    AGE   VERSION
+ip-10-20-1-62.ap-south-1.compute.internal   Ready    <none>   37m   v1.31.14-eks-b9510e3
+ip-10-20-2-90.ap-south-1.compute.internal   Ready    <none>   37m   v1.31.14-eks-b9510e3
+
+$ kubectl get pods -n washq
+
+NAME                                   READY   STATUS    RESTARTS   AGE
+washq-washq-backend-dfb7bcb75-4ffh8    1/1     Running   0          58s
+washq-washq-backend-dfb7bcb75-rs6vt    1/1     Running   0          47s
+washq-washq-frontend-bcf9c5f48-gdfs7   1/1     Running   0          52s
+washq-washq-frontend-bcf9c5f48-s5jwx   1/1     Running   0          57s
+washq-washq-postgres-0                 1/1     Running   0          34m
+
+$ kubectl get svc -n washq
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+washq-washq-backend    ClusterIP   172.20.8.178    <none>        8000/TCP   34m
+washq-washq-frontend   ClusterIP   172.20.23.251   <none>        80/TCP     34m
+washq-washq-postgres   ClusterIP   172.20.11.121   <none>        5432/TCP   34m
+
+$ kubectl get ingress -n washq
+
+NAME          CLASS   HOSTS         ADDRESS   PORTS   AGE
+washq-washq   nginx   washq.local             80      34m
+
+$ kubectl get hpa -n washq
+
+NAME                  REFERENCE                        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+washq-washq-backend   Deployment/washq-washq-backend   cpu: 2%/70%   2         6         2          34m
+
+$ helm list -n washq
+
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+washq   washq           2               2026-10-17 01:12:55.579677 +0530 IST    deployed        washq-1.0.0     1.0.0      
+
+$ curl -H 'Host: washq.local' http://<ingress>/health
+
+{"status":"ok","version":"04ac3a6b1028e8db1fc5e6856d38b45db8665e1b","slot_minutes":45}

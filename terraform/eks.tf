@@ -78,3 +78,24 @@ resource "aws_eks_addon" "metrics_server" {
   addon_name   = "metrics-server"
   depends_on   = [aws_eks_node_group.main]
 }
+
+# Without this nothing can create an EBS volume. EKS ships a gp2
+# StorageClass that points at ebs.csi.aws.com, but it does not ship the
+# driver behind it, so a PersistentVolumeClaim just sits in Pending with
+# "waiting for a volume to be created by the external provisioner". The
+# Postgres StatefulSet never starts, and the backend init container then
+# fails against a database that was never scheduled.
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "aws-ebs-csi-driver"
+
+  # The controller gets its EC2 permissions through IRSA, not from the
+  # node role. See the comment in iam.tf for why the node role alone
+  # leaves it crash looping.
+  service_account_role_arn = aws_iam_role.ebs_csi.arn
+
+  depends_on = [
+    aws_eks_node_group.main,
+    aws_iam_role_policy_attachment.ebs_csi,
+  ]
+}

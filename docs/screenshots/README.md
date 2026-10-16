@@ -33,6 +33,7 @@ Every screenshot the rubric asks for, and where it is.
 | video | Argo CD synced, from the command line | `16-argocd-cli.png` |
 | M8 | The Ingress host answering, and the Ingress object | `18-ingress-curl.png` |
 | M7 | The VPC, subnets and cluster read back from AWS | `21-aws-resources.png` |
+| M8 | `kubectl`, `helm list` and /health, all against the EKS cluster | `22-eks-kubectl-helm.png` |
 
 Each of these is the output in [`../evidence/`](../evidence) drawn into a
 terminal image. The text was written by the commands themselves, and the
@@ -45,7 +46,6 @@ Four, all needing the EKS cluster up, all captured in the same sitting as
 the video:
 
 - `terraform destroy` finishing, which is on the submission checklist (M7)
-- `kubectl` and `helm` against EKS rather than the local kind cluster (M8)
 - The app through the EKS LoadBalancer address, which replaces the local
   `washq.local` shot above
 
