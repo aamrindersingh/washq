@@ -275,7 +275,7 @@ carries.
 | Public subnets | Two, in two availability zones |
 | Internet gateway and route table | Public route out |
 | EKS cluster | Kubernetes 1.31 |
-| Managed node group | 2 to 4 `t3.medium` workers |
+| Managed node group | 2 to 4 `m7i-flex.large` workers |
 | Addons | vpc-cni, kube-proxy, coredns, metrics-server |
 | IAM | One role for the control plane, one for the nodes |
 
@@ -291,7 +291,21 @@ aws eks update-kubeconfig --region ap-south-1 --name washq-cluster
 `terraform plan` reports 19 resources to add. The real output is in
 [`docs/evidence/05-terraform-plan.txt`](docs/evidence/05-terraform-plan.txt).
 
-Two details that are easy to miss:
+**The node instance type has to be Free Tier eligible** if the account is
+on the AWS Free plan. `t3.medium` is not, and the failure is confusing:
+the cluster builds normally, then the node group sits in `CREATE_FAILED`
+for half an hour with `AsgInstanceLaunchFailures: The specified instance
+type is not eligible for Free Tier`. The types that do work come from:
+
+```bash
+aws ec2 describe-instance-types --region ap-south-1 \
+  --filters Name=free-tier-eligible,Values=true
+```
+
+`m7i-flex.large` is on that list and has 8 GiB, so it is the default
+here. On a paid account any sensible type works.
+
+Two more details that are easy to miss:
 
 The subnets carry `kubernetes.io/role/elb` and the cluster tag. Without
 those tags a Service of type LoadBalancer never gets an address, and it
