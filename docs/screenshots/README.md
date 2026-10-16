@@ -16,6 +16,7 @@ Every screenshot the rubric asks for, and where it is.
 | M9 | Prometheus Targets page showing the app `UP` | `08-prometheus-targets.png` |
 | M9 | Grafana dashboard with a populated panel | `09-grafana-dashboard.png` |
 | video | Argo CD application synced | `10-argocd-synced.png` |
+| M8 | App in a browser through the Ingress at `washq.local` | `17-app-via-ingress.jpg` |
 
 ## Terminal
 
@@ -28,6 +29,7 @@ Every screenshot the rubric asks for, and where it is.
 | M7 | `terraform validate` and `terraform plan` | `14-terraform-plan.png` |
 | M8 | HPA going from 2 pods to 4 under load | `15-hpa-scaling.png` |
 | video | Argo CD synced, from the command line | `16-argocd-cli.png` |
+| M8 | The Ingress host answering, and the Ingress object | `18-ingress-curl.png` |
 
 Each of these is the output in [`../evidence/`](../evidence) drawn into a
 terminal image. The text was written by the commands themselves, and the
@@ -42,7 +44,8 @@ the video:
 - AWS Console showing the VPC and the EKS cluster in `ap-south-1` (M7)
 - `terraform destroy` finishing, which is on the submission checklist (M7)
 - `kubectl` and `helm` against EKS rather than the local kind cluster (M8)
-- The app in a browser through the EKS LoadBalancer address (M8)
+- The app through the EKS LoadBalancer address, which replaces the local
+  `washq.local` shot above
 
 Everything above was captured against a local kind cluster. It is all
 real and reproducible, and it gets retaken on EKS during recording so one

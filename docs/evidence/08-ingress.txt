@@ -1,0 +1,25 @@
+$ curl -s -o /dev/null -w '%{http_code}' http://washq.local:8080/
+
+200
+
+$ curl -s http://washq.local:8080/api/machines
+
+[
+    {
+        "id": 1,
+        "label": "W1",
+        "location": "Block A ground floor",
+        "status": "free",
+        "busy_now": false,
+        "free_at": null,
+        "current_booking_id": null
+    },
+    {
+        "id": 2,
+        "label": "W2",
+        "location": "Block A ground floor",
+
+$ kubectl get ingress -n washq
+
+NAME          CLASS   HOSTS         ADDRESS     PORTS   AGE
+washq-washq   nginx   washq.local   localhost   80      14m
