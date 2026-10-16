@@ -17,6 +17,8 @@ Every screenshot the rubric asks for, and where it is.
 | M9 | Grafana dashboard with a populated panel | `09-grafana-dashboard.png` |
 | video | Argo CD application synced | `10-argocd-synced.png` |
 | M8 | App in a browser through the Ingress at `washq.local` | `17-app-via-ingress.jpg` |
+| M7 | AWS Console, EKS cluster Active in `ap-south-1` | `19-aws-eks-console.jpg` |
+| M7 | AWS Console, both public subnets in the VPC | `20-aws-vpc-subnets.jpg` |
 
 ## Terminal
 
@@ -30,6 +32,7 @@ Every screenshot the rubric asks for, and where it is.
 | M8 | HPA going from 2 pods to 4 under load | `15-hpa-scaling.png` |
 | video | Argo CD synced, from the command line | `16-argocd-cli.png` |
 | M8 | The Ingress host answering, and the Ingress object | `18-ingress-curl.png` |
+| M7 | The VPC, subnets and cluster read back from AWS | `21-aws-resources.png` |
 
 Each of these is the output in [`../evidence/`](../evidence) drawn into a
 terminal image. The text was written by the commands themselves, and the
@@ -41,7 +44,6 @@ or copied.
 Four, all needing the EKS cluster up, all captured in the same sitting as
 the video:
 
-- AWS Console showing the VPC and the EKS cluster in `ap-south-1` (M7)
 - `terraform destroy` finishing, which is on the submission checklist (M7)
 - `kubectl` and `helm` against EKS rather than the local kind cluster (M8)
 - The app through the EKS LoadBalancer address, which replaces the local
