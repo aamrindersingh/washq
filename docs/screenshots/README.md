@@ -1,9 +1,10 @@
 # Screenshots
 
-What the rubric asks for, and where each one is. Anything not here yet is
-listed at the bottom with the reason.
+Every screenshot the rubric asks for, and where it is.
 
-| Module | Rubric asks for | File |
+## Browser
+
+| Module | What the rubric asks for | File |
 |---|---|---|
 | M1 | Running application in the browser | `01-app-desktop.png` |
 | M1 | Responsive UI | `02-app-mobile.png` |
@@ -12,43 +13,48 @@ listed at the bottom with the reason.
 | M5 | GitHub Actions run, green pipeline | `04-github-actions-green.jpg` |
 | M5 | GHCR package page with SHA based tags | `05-ghcr-packages.jpg` |
 | M6 | Trivy scan output from a pipeline run | `06-trivy-scan.jpg` |
-| M9 | Prometheus Targets page, app `UP` | `08-prometheus-targets.png` |
+| M9 | Prometheus Targets page showing the app `UP` | `08-prometheus-targets.png` |
 | M9 | Grafana dashboard with a populated panel | `09-grafana-dashboard.png` |
 | video | Argo CD application synced | `10-argocd-synced.png` |
 
-## Terminal output
-
-The rubric asks for these as screenshots. They are in
-[`../evidence/`](../evidence) as text files instead, captured straight
-from the commands, so the exact output can be read and searched rather
-than squinted at:
+## Terminal
 
 | Module | Command | File |
 |---|---|---|
-| M2 | `pytest -v`, 21 passed | `evidence/01-pytest.txt` |
-| M4 | `docker compose ps` and `/health` | `evidence/02-docker-compose.txt` |
-| M7 | `terraform validate` and `plan` | `evidence/05-terraform-plan.txt` |
-| M8 | `kubectl get pods / svc / ingress / hpa`, `helm list` | `evidence/03-kubernetes.txt` |
-| M8 | HPA scaling from 2 pods to 4 under load | `evidence/06-hpa-scaling.txt` |
-| M9 | `curl /metrics` | `evidence/04-metrics.txt` |
-| video | Argo CD synced and healthy | `evidence/07-argocd.txt` |
+| M2 | `pytest -v`, 21 passed | `07-pytest-terminal.png` |
+| M4 | `docker compose ps` and `/health` | `11-docker-compose.png` |
+| M8 | `kubectl get pods / svc / ingress / hpa` and `helm list` | `12-kubectl-helm.png` |
+| M9 | `curl /metrics` | `13-metrics-endpoint.png` |
+| M7 | `terraform validate` and `terraform plan` | `14-terraform-plan.png` |
+| M8 | HPA going from 2 pods to 4 under load | `15-hpa-scaling.png` |
+| video | Argo CD synced, from the command line | `16-argocd-cli.png` |
 
-These same commands are run live in the presentation video, which is
-where the terminal screenshots the rubric describes actually come from.
+Each of these is the output in [`../evidence/`](../evidence) drawn into a
+terminal image. The text was written by the commands themselves, and the
+matching `.txt` file is in the repo next to it so anything can be checked
+or copied.
 
 ## Still to capture
 
-Four, all of which need the EKS cluster running, and all of which are
-captured in the same session as the video recording:
+Four, all needing the EKS cluster up, all captured in the same sitting as
+the video:
 
 - AWS Console showing the VPC and the EKS cluster in `ap-south-1` (M7)
-- `terraform destroy` completing (M7, and it is on the submission
-  checklist)
-- `kubectl get pods`, `get svc` and `helm list` against EKS rather than
-  the local kind cluster (M8)
+- `terraform destroy` finishing, which is on the submission checklist (M7)
+- `kubectl` and `helm` against EKS rather than the local kind cluster (M8)
 - The app in a browser through the EKS LoadBalancer address (M8)
 
-The Prometheus, Grafana and Argo CD screenshots above were taken against
-a local kind cluster. They are real and reproducible, but they will be
-retaken against EKS during recording so every screenshot shows the same
-cluster.
+Everything above was captured against a local kind cluster. It is all
+real and reproducible, and it gets retaken on EKS during recording so one
+cluster appears throughout.
+
+## One thing worth knowing about `helm list`
+
+`helm list` only shows a release while Helm owns it. Argo CD renders the
+chart and applies the result, so it never creates a Helm release, and
+once Argo takes over the namespace `helm list` comes back empty.
+
+That is why the order matters. The M8 screenshot above was taken after
+`helm upgrade --install`, which is what that module is marked on, and
+Argo CD was pointed at the namespace afterwards for the GitOps part. Both
+are real, they just cannot be true at the same instant.

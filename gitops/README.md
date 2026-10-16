@@ -60,3 +60,16 @@ The chart does not set `replicas` when autoscaling is on, but the running
 Deployment always has a number in that field. Without this rule Argo
 reads the scaled count as drift and resets it, undoing the autoscaler
 every few minutes.
+
+## Why `helm list` is empty once Argo owns it
+
+Argo CD renders the chart and applies the output. It does not run Helm,
+so there is no release secret and `helm list -n washq` comes back empty
+even though everything in the namespace came from the chart.
+
+That surprised me the first time. It also means Helm and Argo cannot
+both own the namespace at once: after Argo has applied with server side
+apply, a later `helm upgrade` fails with a field ownership conflict.
+
+So the order is: `helm upgrade --install` first, which is how the chart
+is proven to work on its own, then hand the namespace to Argo CD.

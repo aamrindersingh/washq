@@ -1,29 +1,30 @@
 $ kubectl get pods -n washq
 
 NAME                                    READY   STATUS    RESTARTS   AGE
-washq-washq-backend-85f7696d4f-6kg4s    1/1     Running   0          8m41s
-washq-washq-backend-85f7696d4f-xwgnb    1/1     Running   0          8m41s
-washq-washq-frontend-7b45d87787-49pcj   1/1     Running   0          8m41s
-washq-washq-frontend-7b45d87787-l2t8j   1/1     Running   0          8m41s
-washq-washq-postgres-0                  1/1     Running   0          8m41s
+washq-washq-backend-85f7696d4f-mjlw6    1/1     Running   0          79s
+washq-washq-backend-85f7696d4f-pqknw    1/1     Running   0          79s
+washq-washq-frontend-7b45d87787-dphkt   1/1     Running   0          79s
+washq-washq-frontend-7b45d87787-qsvcw   1/1     Running   0          79s
+washq-washq-postgres-0                  1/1     Running   0          79s
 
 $ kubectl get svc -n washq
 
 NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-washq-washq-backend    ClusterIP   10.96.167.136   <none>        8000/TCP   8m41s
-washq-washq-frontend   ClusterIP   10.96.167.211   <none>        80/TCP     8m41s
-washq-washq-postgres   ClusterIP   10.96.48.66     <none>        5432/TCP   8m41s
+washq-washq-backend    ClusterIP   10.96.209.118   <none>        8000/TCP   79s
+washq-washq-frontend   ClusterIP   10.96.9.38      <none>        80/TCP     79s
+washq-washq-postgres   ClusterIP   10.96.101.15    <none>        5432/TCP   79s
 
 $ kubectl get ingress -n washq
 
 NAME          CLASS   HOSTS         ADDRESS     PORTS   AGE
-washq-washq   nginx   washq.local   localhost   80      8m41s
+washq-washq   nginx   washq.local   localhost   80      79s
 
 $ kubectl get hpa -n washq
 
-No resources found in washq namespace.
+NAME                  REFERENCE                        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+washq-washq-backend   Deployment/washq-washq-backend   cpu: 3%/70%   2         6         2          79s
 
 $ helm list -n washq
 
-NAME 	NAMESPACE	REVISION	UPDATED                             	STATUS  	CHART      	APP VERSION
-washq	washq    	2       	2026-10-16 03:06:28.536759 +0530 IST	deployed	washq-1.0.0	1.0.0      
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+washq   washq           1               2026-10-16 23:09:47.368184 +0530 IST    deployed        washq-1.0.0     1.0.0      
