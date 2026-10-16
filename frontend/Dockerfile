@@ -1,5 +1,12 @@
 # Stage 1: build the static files with Node.
-FROM node:22-alpine AS build
+#
+# --platform=$BUILDPLATFORM pins this stage to the machine doing the
+# building rather than the architecture being built for. The output is
+# plain JS and CSS, which is the same whatever the target, so there is
+# nothing to gain from running it under emulation. Without this the arm64
+# build runs npm under QEMU, which on one run hung until GitHub killed
+# the job at its six hour limit.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 
 WORKDIR /build
 

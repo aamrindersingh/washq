@@ -17,6 +17,7 @@ jobs:
   test:
     name: Backend tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +40,7 @@ jobs:
   frontend-build:
     name: Frontend build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -63,6 +65,7 @@ jobs:
   images:
     name: Build, scan and push ${{ matrix.name }}
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     # Both gates have to be green before anything is built.
     needs: [test, frontend-build]
     permissions:
