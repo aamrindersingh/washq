@@ -40,9 +40,23 @@ variable "kubernetes_version" {
 }
 
 variable "node_instance_type" {
-  description = "Worker node size. t3.medium is the smallest that comfortably runs the stack plus Prometheus."
+  description = "Worker node size. Must be Free Tier eligible on a Free plan account."
   type        = string
-  default     = "t3.medium"
+  default     = "m7i-flex.large"
+
+  # t3.medium was the first choice and it fails on an AWS Free plan
+  # account. The cluster builds, then the node group sits in CREATE_FAILED
+  # with:
+  #
+  #   AsgInstanceLaunchFailures: The specified instance type is not
+  #   eligible for Free Tier
+  #
+  # The eligible list comes from:
+  #   aws ec2 describe-instance-types --region ap-south-1 \
+  #     --filters Name=free-tier-eligible,Values=true
+  #
+  # m7i-flex.large is on it, and at 2 vCPU and 8 GiB it has more room than
+  # t3.medium did. On a normal paid account any sensible type works.
 }
 
 variable "node_desired_size" {
