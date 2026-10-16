@@ -34,24 +34,18 @@ Every screenshot the rubric asks for, and where it is.
 | M8 | The Ingress host answering, and the Ingress object | `18-ingress-curl.png` |
 | M7 | The VPC, subnets and cluster read back from AWS | `21-aws-resources.png` |
 | M8 | `kubectl`, `helm list` and /health, all against the EKS cluster | `22-eks-kubectl-helm.png` |
+| M7 | `terraform destroy` finishing, and AWS confirmed empty afterwards | `23-terraform-destroy.png` |
 
 Each of these is the output in [`../evidence/`](../evidence) drawn into a
 terminal image. The text was written by the commands themselves, and the
 matching `.txt` file is in the repo next to it so anything can be checked
 or copied.
 
-## Still to capture
+## Everything is captured
 
-Four, all needing the EKS cluster up, all captured in the same sitting as
-the video:
-
-- `terraform destroy` finishing, which is on the submission checklist (M7)
-- The app through the EKS LoadBalancer address, which replaces the local
-  `washq.local` shot above
-
-Everything above was captured against a local kind cluster. It is all
-real and reproducible, and it gets retaken on EKS during recording so one
-cluster appears throughout.
+Nothing is outstanding. The EKS screenshots were taken against a real
+cluster in ap-south-1, which was then destroyed, and the destroy output
+is in the table above.
 
 ## One thing worth knowing about `helm list`
 

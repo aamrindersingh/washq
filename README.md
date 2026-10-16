@@ -344,6 +344,27 @@ When you are done, and this matters because EKS is charged by the hour:
 terraform destroy
 ```
 
+```
+Destroy complete! Resources: 24 destroyed.
+```
+
+**One thing `terraform destroy` will not clean up.** The Postgres volume
+is created by Kubernetes, not by Terraform, so Terraform does not know it
+exists. `helm uninstall` does not remove it either, because a
+StatefulSet keeps its PersistentVolumeClaims on purpose so data survives
+a reinstall. Destroy the cluster and the EBS volume is simply orphaned,
+unattached and still billing.
+
+So check after every destroy:
+
+```bash
+aws ec2 describe-volumes --region ap-south-1 \
+  --filters Name=status,Values=available --query 'Volumes[].VolumeId'
+```
+
+Anything listed there is attached to nothing and costing money. Delete
+the PVC before destroying, or delete the volume afterwards.
+
 No AWS credentials are committed. Terraform reads them from the AWS CLI
 config or the environment, and `terraform.tfvars` is gitignored.
 

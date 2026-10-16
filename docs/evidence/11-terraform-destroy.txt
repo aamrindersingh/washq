@@ -1,0 +1,26 @@
+$ terraform destroy -auto-approve
+
+aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"]: Destruction complete after 1s
+aws_iam_role.node: Destruction complete after 1s
+aws_eks_cluster.main: Destruction complete after 7m27s
+aws_subnet.public[1]: Destruction complete after 1s
+aws_subnet.public[0]: Destruction complete after 1s
+aws_iam_role_policy_attachment.cluster: Destruction complete after 2s
+aws_vpc.main: Destruction complete after 1s
+aws_iam_role.cluster: Destruction complete after 1s
+
+Destroy complete! Resources: 24 destroyed.
+
+$ aws eks list-clusters --region ap-south-1
+
+{
+    "clusters": []
+}
+
+$ aws ec2 describe-vpcs --region ap-south-1 --filters Name=tag:Project,Values=washq --query 'Vpcs[].VpcId'
+
+[]
+
+$ aws ec2 describe-volumes --region ap-south-1 --filters Name=status,Values=available --query 'Volumes[].VolumeId'
+
+[]
