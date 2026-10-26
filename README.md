@@ -276,8 +276,8 @@ carries.
 | Internet gateway and route table | Public route out |
 | EKS cluster | Kubernetes 1.31 |
 | Managed node group | 2 to 4 `m7i-flex.large` workers |
-| Addons | vpc-cni, kube-proxy, coredns, metrics-server |
-| IAM | One role for the control plane, one for the nodes |
+| Addons | vpc-cni, kube-proxy, coredns, metrics-server, aws-ebs-csi-driver |
+| IAM | Roles for the control plane and the nodes, plus an IRSA role for the EBS driver |
 
 ```bash
 cd terraform
@@ -288,7 +288,7 @@ terraform apply
 aws eks update-kubeconfig --region ap-south-1 --name washq-cluster
 ```
 
-`terraform plan` reports 19 resources to add. The real output is in
+`terraform plan` reports 24 resources to add. The real output is in
 [`docs/evidence/05-terraform-plan.txt`](docs/evidence/05-terraform-plan.txt).
 
 **The node instance type has to be Free Tier eligible** if the account is
