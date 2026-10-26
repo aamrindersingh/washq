@@ -24,7 +24,7 @@ spec:
         # The commit SHA of the images the pipeline published. Bumping
         # this is the deploy.
         - name: image.tag
-          value: "bb31e3ac655257f0617eaa1f8216244b99677a34"
+          value: "23b9504eeb0278c7e5aec85f791322e3f4fe4803"
 
   destination:
     server: https://kubernetes.default.svc
