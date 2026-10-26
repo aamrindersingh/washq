@@ -320,6 +320,20 @@ with `no EC2 IMDS role found`. So `iam.tf` creates an OIDC provider and a
 role scoped to `system:serviceaccount:kube-system:ebs-csi-controller-sa`,
 and the addon is given that role.
 
+**The console shows `Unauthorized` for nodes unless you are the creator.**
+EKS only gives Kubernetes access to the identity that ran `terraform
+apply`. Anyone else, including the root user signed in to the AWS
+console, sees the Compute page's node list fail with `Unauthorized`.
+Grant read-only access with an access entry:
+
+```bash
+aws eks create-access-entry --region ap-south-1 --cluster-name washq-cluster \
+  --principal-arn <their IAM ARN>
+aws eks associate-access-policy --region ap-south-1 --cluster-name washq-cluster \
+  --principal-arn <their IAM ARN> --access-scope type=cluster \
+  --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy
+```
+
 **An AWS Free plan account cannot create load balancers at all.** A
 Service of type LoadBalancer stays `<pending>` and the event reads
 `OperationNotPermitted: This AWS account currently does not support
