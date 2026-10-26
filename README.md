@@ -420,6 +420,35 @@ If Helm sets replicas and the HPA also sets it, every `helm upgrade`
 resets the count and the two fight. Leaving it out hands ownership to the
 HPA.
 
+### On EKS
+
+After `terraform apply`:
+
+```bash
+aws eks update-kubeconfig --region ap-south-1 --name washq-cluster
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/baremetal/deploy.yaml
+
+kubectl apply -f k8s/namespace.yaml
+helm upgrade --install washq ./helm/washq -n washq \
+  -f helm/washq/values-prod.yaml --set image.tag=<commit-sha>
+
+kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8088:80
+```
+
+Then <http://washq.local:8088>, with `127.0.0.1 washq.local` in
+`/etc/hosts`.
+
+The ingress controller uses the bare metal manifest on purpose. Its
+Service is a NodePort rather than a LoadBalancer, which matters on an AWS
+Free plan account, where load balancers cannot be created at all. With
+the AWS manifest the Service sits at `<pending>` forever and the Ingress
+never gets an address. On a paid account either manifest works.
+
+Install the monitoring stack first if `values-prod.yaml` is used as is,
+because it turns on the ServiceMonitor and that needs the Prometheus
+operator's CRDs to exist.
+
 ### Testing the chart without AWS
 
 The whole stack runs on a local kind cluster for free, which is how it
@@ -467,6 +496,17 @@ washq-washq-backend   cpu: 93%/70%   2         6         4
 
 Full output in
 [`docs/evidence/06-hpa-scaling.txt`](docs/evidence/06-hpa-scaling.txt).
+
+On EKS the ingress is reached through a port forward, which is not built
+to carry real load and tends to drop under it. So there the load comes
+from a pod inside the cluster instead, aimed straight at the backend
+Service:
+
+```bash
+./scripts/load-in-cluster.sh 120
+kubectl get hpa -n washq -w
+kubectl delete pod washq-load -n washq   # afterwards
+```
 
 Scale down has a 120 second stabilisation window, otherwise the replica
 count flaps every time traffic dips for a moment.
@@ -591,7 +631,7 @@ terraform/          VPC, EKS, IAM
 monitoring/         Prometheus values and the Grafana dashboard
 gitops/             Argo CD application
 troubleshooting/    two deliberately broken manifests
-scripts/            load test for the HPA
+scripts/            load tests for the HPA, from outside or inside the cluster
 docs/evidence/      real command output
 docs/screenshots/   app, Prometheus and Grafana
 demo/               presentation video and slides
