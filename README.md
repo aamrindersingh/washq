@@ -85,7 +85,7 @@ The backend scales on CPU between 2 and 6 pods. The frontend stays at 2.
 | Frontend | React 18, Vite, plain CSS, served by nginx |
 | Backend | Python 3.12, FastAPI, SQLAlchemy 2, Pydantic v2 |
 | Database | PostgreSQL 16, schema managed by Alembic |
-| Tests | pytest, 21 tests against a throwaway SQLite database |
+| Tests | pytest, 22 tests against a throwaway SQLite database |
 | Containers | Docker, multi-stage build for the frontend |
 | CI/CD | GitHub Actions, images published to GHCR |
 | Security | Trivy image scan, fails the build on HIGH or CRITICAL |
@@ -115,7 +115,7 @@ uvicorn. The frontend is nginx serving the built React app.
 | What | Where |
 |---|---|
 | App | <http://localhost:3000> |
-| API docs | <http://localhost:8000/docs> |
+| API docs | <http://localhost:3000/api/docs> |
 | Metrics | <http://localhost:8000/metrics> |
 
 To stop it and throw the database away:
@@ -174,7 +174,7 @@ $ curl -X POST localhost:8000/api/bookings -H 'Content-Type: application/json' \
 cd backend && pytest -v
 ```
 
-21 tests, all passing. Real output is in
+22 tests, all passing. Real output is in
 [`docs/evidence/01-pytest.txt`](docs/evidence/01-pytest.txt).
 
 The ones that matter are the clash cases:
@@ -581,7 +581,7 @@ does not exist.
 ```
 backend/            FastAPI app, tests, Alembic migrations
   app/              config, models, schemas, routers, metrics
-  tests/            21 pytest tests
+  tests/            22 pytest tests
   alembic/          one migration
 frontend/           React app, nginx config, multi-stage Dockerfile
   src/              components

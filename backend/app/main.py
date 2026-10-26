@@ -14,6 +14,12 @@ app = FastAPI(
     title="WashQ",
     version=APP_VERSION,
     description="Hostel laundry slots, so two people cannot claim the same machine.",
+    # Under /api so they come through nginx and the ingress, which only
+    # send /api to the backend. At the default /docs the React app catches
+    # the route and the link in the footer goes nowhere.
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+    redoc_url=None,
 )
 
 # Nginx serves the frontend and proxies /api, so same origin in production.

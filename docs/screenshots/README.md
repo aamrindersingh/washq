@@ -24,7 +24,7 @@ Every screenshot the rubric asks for, and where it is.
 
 | Module | Command | File |
 |---|---|---|
-| M2 | `pytest -v`, 21 passed | `07-pytest-terminal.png` |
+| M2 | `pytest -v`, 22 passed | `07-pytest-terminal.png` |
 | M4 | `docker compose ps` and `/health` | `11-docker-compose.png` |
 | M8 | `kubectl get pods / svc / ingress / hpa` and `helm list` | `12-kubectl-helm.png` |
 | M9 | `curl /metrics` | `13-metrics-endpoint.png` |
