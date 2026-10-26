@@ -59,7 +59,7 @@ export default function App() {
       <header>
         <div>
           <h1>WashQ</h1>
-          <p className="tagline">Hostel laundry slots. One machine, one wash, no arguments.</p>
+          <p className="tagline">Hostel laundry slots. One machine, one wash, no arguments. </p>
         </div>
       </header>
 
